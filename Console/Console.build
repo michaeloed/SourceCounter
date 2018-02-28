@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<project name="NLOC.Console" default="compile" >
+	<target name="compile">
+		<csc target="exe" output="${build.dir}/NLOC.exe" doc="${build.dir}/NLOC.xml" optimize="true" noconfig="true">
+			<sources>
+				<include name="**/*.cs" />
+				<include name="../CommonAssemblyInfo.cs" />
+			</sources>
+			<references>
+				<include name="System.dll" />
+				<include name="System.Xml.dll" />
+				<include name="${build.dir}/NLOC.Core.dll" />
+			</references>
+		</csc>
+	</target>
+</project>

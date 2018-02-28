@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="NLOC" default="set-framework">
+    <property name="project.name" value="NLOC" />
+    <property name="project.version" value="1.0" />
+    <property name="project.release.type" value="beta" />
+    <property name="build.dir" value="${project::get-base-directory()}/bin" readonly="false" />
+    <property name="build.number" value="${math::abs(math::floor(timespan::get-total-days(datetime::now() - datetime::parse('02/04/2007'))))}" />
+
+    <target name="set-framework">
+        <if test="${framework::exists('net-2.0')}">
+            <property name="nant.settings.currentframework" value="net-2.0" />
+            <call target="compile" />
+        </if>
+        <if test="${not framework::exists('net-2.0')}">
+            <echo message="The .NET Framework 2.0 is not available. Build skipped." />
+        </if>
+    </target>
+
+    <target name="clean-build-dir">
+        <delete dir="${build.dir}" />
+        <mkdir dir="${build.dir}" />
+    </target>
+
+    <target name="create-common-assemblyinfo">
+        <asminfo output="CommonAssemblyInfo.cs" language="CSharp">
+            <imports>
+                <import namespace="System" />
+                <import namespace="System.Reflection" />
+                <import namespace="System.Runtime.InteropServices" />
+            </imports>
+            <attributes>
+                <attribute type="ComVisibleAttribute" value="false" />
+                <attribute type="AssemblyTitleAttribute" value="NLOC" />
+                <attribute type="AssemblyDescriptionAttribute" value="source line counter tool" />
+                <attribute type="AssemblyConfigurationAttribute" value="${project.release.type}" />
+                <attribute type="AssemblyProductAttribute" value="NLOC" />
+                <attribute type="AssemblyCopyrightAttribute" value="Copyright (C) 2006 Balazs Tihanyi" />
+                <attribute type="AssemblyVersionAttribute" value="${project.version}.${build.number}.0" />
+                <attribute type="AssemblyFileVersionAttribute" value="${project.version}.${build.number}.0" />
+                <attribute type="AssemblyInformationalVersionAttribute" value="${project.version}" />
+            </attributes>
+        </asminfo>
+    </target>
+
+    <target name="delete-common-assemblyinfo">
+        <delete file="CommonAssemblyInfo.cs" failonerror="false" />
+    </target>
+
+    <target name="compile">
+        <call target="clean-build-dir" />
+        <call target="create-common-assemblyinfo" />
+        <nant buildfile="Core/Core.build" target="compile" />
+        <nant buildfile="Console/Console.build" target="compile" />
+        <call target="delete-common-assemblyinfo" />
+    </target>
+</project>
